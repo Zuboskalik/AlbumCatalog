@@ -1,0 +1,75 @@
+[
+  {
+    "model": "catalog.artist",
+    "pk": 1001,
+    "fields": { "name": "Queen" }
+  },
+  {
+    "model": "catalog.artist",
+    "pk": 1002,
+    "fields": { "name": "Pink Floyd" }
+  },
+
+  {
+    "model": "catalog.album",
+    "pk": 2001,
+    "fields": { "title": "A Night at the Opera", "artist": 1001, "release_year": 1975 }
+  },
+  {
+    "model": "catalog.album",
+    "pk": 2002,
+    "fields": { "title": "Greatest Hits", "artist": 1001, "release_year": 1981 }
+  },
+  {
+    "model": "catalog.album",
+    "pk": 2003,
+    "fields": { "title": "The Dark Side of the Moon", "artist": 1002, "release_year": 1973 }
+  },
+
+  {
+    "model": "catalog.song",
+    "pk": 3001,
+    "fields": { "title": "Bohemian Rhapsody" }
+  },
+  {
+    "model": "catalog.song",
+    "pk": 3002,
+    "fields": { "title": "Death on Two Legs" }
+  },
+  {
+    "model": "catalog.song",
+    "pk": 3003,
+    "fields": { "title": "Money" }
+  },
+  {
+    "model": "catalog.song",
+    "pk": 3004,
+    "fields": { "title": "Time" }
+  },
+
+  {
+    "model": "catalog.albumsong",
+    "pk": 4001,
+    "fields": { "album": 2001, "song": 3002, "track_number": 1 }
+  },
+  {
+    "model": "catalog.albumsong",
+    "pk": 4002,
+    "fields": { "album": 2001, "song": 3001, "track_number": 11 }
+  },
+  {
+    "model": "catalog.albumsong",
+    "pk": 4003,
+    "fields": { "album": 2002, "song": 3001, "track_number": 2 }
+  },
+  {
+    "model": "catalog.albumsong",
+    "pk": 4004,
+    "fields": { "album": 2003, "song": 3003, "track_number": 6 }
+  },
+  {
+    "model": "catalog.albumsong",
+    "pk": 4005,
+    "fields": { "album": 2003, "song": 3004, "track_number": 4 }
+  }
+]

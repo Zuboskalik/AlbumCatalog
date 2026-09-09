@@ -1,7 +1,13 @@
 import { defineStore } from "pinia";
 import * as albumsApi from "../api/albums";
 import { getErrorMessage } from "../api/errors";
-import type { Album, AlbumCreateInput, AlbumDetail, TrackInput } from "../types/models";
+import type {
+  Album,
+  AlbumCreateInput,
+  AlbumDetail,
+  AlbumUpdateInput,
+  TrackInput,
+} from "../types/models";
 
 interface State {
   items: Album[];
@@ -52,6 +58,23 @@ export const useAlbumsStore = defineStore("albums", {
         tracks_count: created.tracks.length,
       });
       return created;
+    },
+
+    async update(id: number, payload: AlbumUpdateInput) {
+      const updated = await albumsApi.updateAlbum(id, payload);
+      if (this.current?.id === id) {
+        this.current = { ...this.current, ...updated, tracks: this.current.tracks };
+      }
+      const index = this.items.findIndex((a) => a.id === id);
+      if (index !== -1) {
+        this.items[index] = {
+          ...this.items[index],
+          title: updated.title,
+          artist: updated.artist,
+          release_year: updated.release_year,
+        };
+      }
+      return updated;
     },
 
     async remove(id: number) {

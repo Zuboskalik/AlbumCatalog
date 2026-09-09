@@ -2,6 +2,7 @@
 import { onMounted, ref, watch } from "vue";
 import { RouterLink, useRoute, useRouter } from "vue-router";
 import { useAlbumsStore } from "../stores/albums";
+import { useArtistsStore } from "../stores/artists";
 import { useSongsStore } from "../stores/songs";
 import { getErrorMessage } from "../api/errors";
 import StateMessage from "../components/StateMessage.vue";
@@ -10,6 +11,7 @@ import type { TrackInput } from "../types/models";
 const route = useRoute();
 const router = useRouter();
 const store = useAlbumsStore();
+const artistsStore = useArtistsStore();
 const songsStore = useSongsStore();
 
 const newTrackMode = ref<"existing" | "new">("existing");
@@ -21,15 +23,63 @@ const adding = ref(false);
 
 const trackErrors = ref<Record<number, string>>({});
 
+const editing = ref(false);
+const editTitle = ref("");
+const editArtistId = ref<number | "">("");
+const editReleaseYear = ref<number | "">("");
+const editError = ref<string | null>(null);
+const saving = ref(false);
+
 function load() {
   store.fetchOne(Number(route.params.id));
 }
 
 onMounted(() => {
   load();
+  artistsStore.fetchAll();
   songsStore.fetchAll();
 });
 watch(() => route.params.id, load);
+watch(
+  () => store.current,
+  (album) => {
+    if (album && !editing.value) {
+      editTitle.value = album.title;
+      editArtistId.value = album.artist.id;
+      editReleaseYear.value = album.release_year;
+    }
+  },
+  { immediate: true }
+);
+
+function startEditing() {
+  if (!store.current) return;
+  editTitle.value = store.current.title;
+  editArtistId.value = store.current.artist.id;
+  editReleaseYear.value = store.current.release_year;
+  editError.value = null;
+  editing.value = true;
+}
+
+async function handleSaveMetadata() {
+  if (!store.current || !editTitle.value.trim() || editArtistId.value === "" || editReleaseYear.value === "") {
+    return;
+  }
+  saving.value = true;
+  editError.value = null;
+  try {
+    await store.update(store.current.id, {
+      title: editTitle.value.trim(),
+      artist_id: editArtistId.value as number,
+      release_year: editReleaseYear.value as number,
+    });
+    editing.value = false;
+  } catch (error) {
+    editError.value = getErrorMessage(error);
+  } finally {
+    saving.value = false;
+  }
+}
 
 async function handleAddTrack() {
   if (!store.current) return;
@@ -103,15 +153,60 @@ async function handleDeleteAlbum() {
     <StateMessage :loading="store.loading" :error="store.error" class="mt-4" />
 
     <div v-if="!store.loading && !store.error && store.current" class="mt-4">
-      <div class="mb-4 flex items-start justify-between">
+      <div v-if="!editing" class="mb-4 flex items-start justify-between">
         <div>
           <h1 class="text-2xl font-semibold">{{ store.current.title }}</h1>
           <p class="text-gray-500">{{ store.current.artist.name }} · {{ store.current.release_year }}</p>
         </div>
-        <button type="button" class="text-sm text-red-600 hover:underline" @click="handleDeleteAlbum">
-          Удалить альбом
-        </button>
+        <div class="flex gap-3">
+          <button type="button" class="text-sm text-gray-600 hover:underline" @click="startEditing">
+            Изменить
+          </button>
+          <button type="button" class="text-sm text-red-600 hover:underline" @click="handleDeleteAlbum">
+            Удалить альбом
+          </button>
+        </div>
       </div>
+
+      <form v-else class="mb-6 space-y-3 rounded border border-gray-200 p-4" @submit.prevent="handleSaveMetadata">
+        <div>
+          <label class="mb-1 block text-sm font-medium">Название альбома</label>
+          <input v-model="editTitle" type="text" class="w-full rounded border border-gray-300 px-3 py-2" />
+        </div>
+        <div>
+          <label class="mb-1 block text-sm font-medium">Исполнитель</label>
+          <select v-model="editArtistId" class="w-full rounded border border-gray-300 px-3 py-2">
+            <option v-for="artist in artistsStore.items" :key="artist.id" :value="artist.id">
+              {{ artist.name }}
+            </option>
+          </select>
+        </div>
+        <div>
+          <label class="mb-1 block text-sm font-medium">Год выпуска</label>
+          <input
+            v-model.number="editReleaseYear"
+            type="number"
+            class="w-full rounded border border-gray-300 px-3 py-2"
+          />
+        </div>
+        <p v-if="editError" class="text-sm text-red-600">{{ editError }}</p>
+        <div class="flex gap-2">
+          <button
+            type="submit"
+            :disabled="saving"
+            class="rounded bg-gray-900 px-4 py-2 text-sm text-white disabled:opacity-50"
+          >
+            Сохранить
+          </button>
+          <button
+            type="button"
+            class="rounded border border-gray-300 px-4 py-2 text-sm"
+            @click="editing = false"
+          >
+            Отмена
+          </button>
+        </div>
+      </form>
 
       <h2 class="mb-2 text-lg font-medium">Треклист</h2>
       <table v-if="store.current.tracks.length > 0" class="mb-6 w-full border-collapse text-left">

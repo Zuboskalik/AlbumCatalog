@@ -346,6 +346,17 @@ class AlbumTrackApiTest(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(self.album.album_songs.count(), 1)
 
+    def test_add_track_with_track_number_zero_is_rejected(self):
+        """docs/01_SPEC.md business rule 6: track_number must be >= 1, enforced at the API,
+        not just the model layer (model-level coverage is in test_models.py)."""
+        response = self.client.post(
+            f"/api/albums/{self.album.id}/tracks/",
+            {"song_id": self.song_a.id, "track_number": 0},
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn("track_number", response.data)
+        self.assertEqual(self.album.album_songs.count(), 0)
+
     def test_add_track_with_duplicate_track_number_is_rejected(self):
         AlbumSong.objects.create(album=self.album, song=self.song_a, track_number=1)
 

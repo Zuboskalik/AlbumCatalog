@@ -2,7 +2,7 @@
 
 **Методология:** Spec-Driven Development (SDD)
 **Шаг:** 3 — Tasks
-**Статус:** In Progress — Phase 1, Phase 2, Phase 3 и Phase 4 выполнены полностью
+**Статус:** Complete — все фазы (1–5) выполнены; T5.6 (CI) сознательно отложена
 **Основано на:** [`docs/01_SPEC.md`](01_SPEC.md), [`docs/02_PLAN.md`](02_PLAN.md)
 
 Статусы задач: ✅ Done · ⬜ Pending.
@@ -294,12 +294,14 @@ Scripts/Docker (T1.7): Docker не использовался (не требуе
   а ошибка дублирующегося `track_number` показывается как `400` с читаемым сообщением.
 - **DoD:** `0 failures` в тестах; ручной сценарий выполнен без ошибок `500`.
 
-**Фактический статус:** `python manage.py test catalog` → **55 тестов, 0 failures** (20 из Phase 2
-+ 35 новых API-тестов). Ручной сценарий выполнен через `curl` (эквивалент browsable API): создан
-второй альбом «Greatest Hits» с той же песней «Bohemian Rhapsody» под другим `track_number` —
-`GET /api/songs/1/` корректно вернул оба альбома с их номерами; попытка добавить трек с уже
-занятым `track_number` вернула `400 {"track_number": ["Трек с номером 2 уже существует в этом
-альбоме."]}` — без единого `500`.
+**Фактический статус:** `python manage.py test catalog` → **56 тестов, 0 failures** (20 из Phase 2
++ 36 API-тестов; один тест — `test_add_track_with_track_number_zero_is_rejected` — добавлен на
+шаге Phase 5 при сверке с Acceptance Criteria `01_SPEC.md`, чтобы явно закрыть требование
+«`track_number >= 1` валидируется на уровне API», а не только модели). Ручной сценарий выполнен
+через `curl` (эквивалент browsable API): создан второй альбом «Greatest Hits» с той же песней
+«Bohemian Rhapsody» под другим `track_number` — `GET /api/songs/1/` корректно вернул оба альбома
+с их номерами; попытка добавить трек с уже занятым `track_number` вернула
+`400 {"track_number": ["Трек с номером 2 уже существует в этом альбоме."]}` — без единого `500`.
 
 **Выход из Phase 3:** все REST-эндпоинты из `02_PLAN.md` (раздел 3) реализованы, покрыты
 `APITestCase`, вручную проверены через browsable API.
@@ -316,7 +318,8 @@ Scripts/Docker (T1.7): Docker не использовался (не требуе
 в разных альбомах с разными `track_number` — покрыто отдельным сквозным тестом
 `SongAcrossTwoAlbumsWithDifferentTrackNumbersApiTest` в
 [`backend/catalog/tests/test_api.py`](../backend/catalog/tests/test_api.py) и подтверждено
-вручную через API. `python manage.py test catalog` → 55/55 тестов зелёные.
+вручную через API. `python manage.py test catalog` → 56/56 тестов зелёные (см. T3.9 — один тест
+добавлен на шаге Phase 5).
 
 ---
 
@@ -461,6 +464,13 @@ debounce-поиск + создание), [`SongDetailView.vue`](../frontend/src/
 
 `npm run build` (`vue-tsc -b && vite build`) — 0 ошибок TypeScript.
 
+**Дополнение (Phase 5):** при сверке с Acceptance Criteria `01_SPEC.md` (раздел 5.2, «CRUD-интерфейс
+для альбомов») обнаружено, что метаданные альбома (название/исполнитель/год) нельзя было
+редактировать через UI — только треки. Добавлены `useAlbumsStore.update()` и inline-форма
+редактирования на [`AlbumDetailView.vue`](../frontend/src/views/AlbumDetailView.vue) (кнопка
+«Изменить» → форма → «Сохранить»/«Отмена»), проверено вручную в браузере. `npm run build` после
+изменения — по-прежнему 0 ошибок.
+
 ---
 
 ## Phase 5 — Documentation & Integration
@@ -468,13 +478,13 @@ debounce-поиск + создание), [`SongDetailView.vue`](../frontend/src/
 Цель фазы: проект воспроизводим «с нуля» человеком, который не участвовал в разработке, по одному
 файлу `README.md`.
 
-### T5.1 — `README.md`: обзор проекта `[Manual]`
+### T5.1 — `README.md`: обзор проекта `[Manual]` ✅ Done
 - Краткое описание (1 абзац) — ссылка на `docs/01_SPEC.md` как источник полной спецификации.
 - Таблица стека (backend/frontend) — как в `02_PLAN.md`, раздел 1.
 - **DoD (Manual):** README открывается на GitHub/локально и корректно рендерится (markdown без
   битых ссылок на `docs/*.md`).
 
-### T5.2 — `README.md`: пошаговая инструкция локального запуска `[Manual]`
+### T5.2 — `README.md`: пошаговая инструкция локального запуска `[Manual]` ✅ Done
 - Раздел «Backend» — команды из `02_PLAN.md` (раздел 4.1): создание venv, `pip install`, `.env`,
   `migrate`, `createsuperuser`, `runserver`.
 - Раздел «Frontend» — команды: `npm install`, `.env`, `npm run dev`.
@@ -486,20 +496,20 @@ debounce-поиск + создание), [`SongDetailView.vue`](../frontend/src/
   (или в чистом окружении/контейнере) — от `git clone` до открытия `http://localhost:5173` с рабочим
   приложением, без каких-либо шагов «из головы», не описанных в README.
 
-### T5.3 — `README.md`: описание структуры репозитория `[Manual]`
+### T5.3 — `README.md`: описание структуры репозитория `[Manual]` ✅ Done
 - Краткое дерево папок верхнего уровня (`backend/`, `frontend/`, `docs/`) со ссылками на
   `docs/02_PLAN.md` за подробностями.
 - **DoD (Manual):** структура в README соответствует фактической структуре репозитория на момент
   завершения Phase 4 (сверяется вручную).
 
-### T5.4 — `README.md`: раздел про тесты `[Manual]`
+### T5.4 — `README.md`: раздел про тесты `[Manual]` ✅ Done
 - Команда запуска backend-тестов: `python manage.py test catalog` (из `backend/`).
 - Если во frontend добавлены автотесты (не обязательно по `01_SPEC.md`/`02_PLAN.md`, но если
   появились в ходе Phase 4) — команда их запуска.
 - **DoD (Manual):** команда из README, выполненная в чистом окружении, реально запускает тесты и
   показывает результат `OK`.
 
-### T5.5 — Финальная сверка с Acceptance Criteria из `01_SPEC.md` `[Manual]`
+### T5.5 — Финальная сверка с Acceptance Criteria из `01_SPEC.md` `[Manual]` ✅ Done
 - Пройтись по всем пунктам чек-листов раздела 5.1 (Backend) и 5.2 (Frontend) `01_SPEC.md`,
   отметить каждый как выполненный со ссылкой на задачу(и) из данного файла, которая его закрывает.
 - Зафиксировать результат сверки (например, отметками `[x]` прямо в `01_SPEC.md` или отдельной
@@ -508,14 +518,50 @@ debounce-поиск + создание), [`SongDetailView.vue`](../frontend/src/
   задачи; расхождения либо устраняются, либо явно документируются как сознательно отложенные
   (со ссылкой на раздел 6 «Out of Scope» `01_SPEC.md`).
 
-### T5.6 — CI-проверка (опционально, если требуется репозиторием) `[Manual]`
+### T5.6 — CI-проверка (опционально, если требуется репозиторием) `[Manual]` ⬜ Deferred
 - Если у проекта есть/предполагается CI (GitHub Actions и т.п.) — настроить минимальный workflow:
   `python manage.py test` для backend, `npm run build`/`vue-tsc --noEmit` для frontend.
 - **DoD (Manual):** workflow зелёный на пуше в основную ветку. Если CI не требуется на этом этапе
   проекта — задача помечается как отложенная, без блокировки Phase 5.
 
+**Фактический статус:** сознательно отложено — CI/CD не запрашивался и не входит в объём текущего
+MVP. Легко добавить позже: эквивалент workflow — `python manage.py test catalog` (backend) и
+`npm run build` (frontend), обе команды уже задокументированы в README и подтверждены рабочими.
+
 **Выход из Phase 5:** проект полностью документирован, воспроизводим с нуля по README, и сверен
 с исходной спецификацией.
+
+**Фактический статус:** ✅ выполнено (T5.1–T5.5; T5.6 сознательно отложена, см. выше).
+
+Создан [`README.md`](../README.md) в корне репозитория: обзор проекта со ссылкой на
+[`docs/01_SPEC.md`](01_SPEC.md), таблица стека, дерево структуры репозитория, пошаговая инструкция
+локального запуска (MySQL → backend venv/`.env`/`migrate`/`loaddata`/`runserver` → frontend
+`npm install`/`.env`/`npm run dev`), раздел про тестовые данные и раздел про тесты, таблица сверки
+с Acceptance Criteria `01_SPEC.md` (раздел 5).
+
+**Тестовые данные:** добавлен Django-fixture
+[`backend/catalog/fixtures/sample_data.json`](../backend/catalog/fixtures/sample_data.json) —
+2 исполнителя, 3 альбома, 4 песни; песня «Bohemian Rhapsody» намеренно включена в 2 альбома Queen
+под разными `track_number` (11 и 2), чтобы сразу демонстрировать ключевое бизнес-правило после
+`python manage.py loaddata sample_data`. Fixture использует pk в диапазоне 1001+/2001+/3001+/4001+,
+чтобы не конфликтовать с данными, созданными вручную в БД в ходе предыдущих фаз; команда
+идемпотентна (`loaddata` выполняет upsert по pk) — проверено повторным запуском.
+
+**Критическая проверка T5.2 (буквально «с нуля»):** `backend/.venv` и `backend/.env` удалены и
+пересозданы точно по шагам README (`python -m venv .venv` → `pip install -r requirements.txt` →
+`cp .env.example .env` → `python manage.py migrate` → `python manage.py loaddata sample_data` →
+`python manage.py test catalog` → `python manage.py runserver 8000`) — `GET /api/` и
+`/admin/login/` вернули `200`, тесты `56/56 OK`. Аналогично `frontend/node_modules` и
+`frontend/.env` удалены и пересозданы (`npm install` → `cp .env.example .env` → `npm run dev`) —
+приложение на `:5173` корректно отобразило данные из fixture через реальный backend на `:8000`;
+`npm run build` — 0 ошибок.
+
+**Сверка с Acceptance Criteria (T5.5):** пройдены все пункты разделов 5.1 и 5.2 `01_SPEC.md` —
+таблица соответствия приведена в README. Единственное расхождение, найденное при сверке —
+отсутствие UI-редактирования метаданных альбома (только треков) — устранено тут же (см.
+дополнение в конце Phase 4 выше). Расхождений, требующих отдельного документирования как
+«сознательно отложено», не осталось, кроме заведомо вынесенного в раздел 6 «Out of Scope»
+`01_SPEC.md` функционала (аутентификация, обложки, i18n и т.д.) и CI (T5.6).
 
 ---
 
