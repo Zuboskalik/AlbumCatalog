@@ -2,12 +2,10 @@
 
 **Методология:** Spec-Driven Development (SDD)
 **Шаг:** 3 — Tasks
-**Статус:** In Progress — Phase 1 (backend-часть), Phase 2 и Phase 3 выполнены
+**Статус:** In Progress — Phase 1, Phase 2 и Phase 3 выполнены полностью
 **Основано на:** [`docs/01_SPEC.md`](01_SPEC.md), [`docs/02_PLAN.md`](02_PLAN.md)
 
-Статусы задач: ✅ Done · ⬜ Pending. T1.5–T1.7 (инициализация frontend и общие скрипты запуска)
-намеренно оставлены `⬜ Pending` — выполнялась только backend-часть Phase 1 (Django-проект, `.env`,
-CORS, роутинг `/api/`), вся Phase 2 и вся Phase 3.
+Статусы задач: ✅ Done · ⬜ Pending.
 
 Каждая задача атомарна (один коммит/один PR), имеет явный **Definition of Done (DoD)** и способ
 проверки — автотест (TDD, красное → зелёное) либо ручная проверка (`Manual check`). Задачи внутри
@@ -56,7 +54,7 @@ CORS, роутинг `/api/`), вся Phase 2 и вся Phase 3.
 - В `catalog/urls.py` создать пустой `DefaultRouter()` (без вьюсетов пока).
 - **DoD:** `GET http://localhost:8000/api/` возвращает `200` с DRF browsable API (пустой список роутов).
 
-### T1.5 — Инициализация Vue 3 + Vite проекта `[Manual]` ⬜ Pending
+### T1.5 — Инициализация Vue 3 + Vite проекта `[Manual]` ✅ Done
 - Создать `frontend/` через `npm create vite@latest . -- --template vue-ts` (или `vue`, если решено
   без TS — фиксируется здесь на TS согласно `02_PLAN.md`).
 - Установить зависимости: `vue-router`, `pinia`, `axios`, Tailwind CSS (`tailwindcss`, `postcss`,
@@ -64,7 +62,7 @@ CORS, роутинг `/api/`), вся Phase 2 и вся Phase 3.
 - Настроить Tailwind (`tailwind.config.js`, директивы в `src/style.css` или аналог).
 - **DoD:** `npm run dev` поднимает Vite на `:5173`, стартовая страница рендерится без ошибок в консоли.
 
-### T1.6 — Каркас Vue Router + Pinia + Axios-клиент `[Manual]` ⬜ Pending
+### T1.6 — Каркас Vue Router + Pinia + Axios-клиент `[Manual]` ✅ Done
 - Подключить `createRouter`/`createPinia` в `src/main.ts`.
 - Создать `src/router/index.ts` с заглушками маршрутов: `/artists`, `/albums`, `/songs` (пустые
   компоненты-заглушки).
@@ -73,19 +71,48 @@ CORS, роутинг `/api/`), вся Phase 2 и вся Phase 3.
 - **DoD:** переход по трём маршрутам в браузере рендерит соответствующие заглушки без ошибок консоли;
   `axios`-клиент импортируется без ошибок сборки.
 
-### T1.7 — Скрипты локального запуска и (опционально) Docker Compose `[Manual]` ⬜ Pending
+### T1.7 — Скрипты локального запуска и (опционально) Docker Compose `[Manual]` ✅ Done
 - Добавить в корень README-раздел или отдельный `scripts/` с командами запуска (детали — Phase 5),
   либо сразу `docker-compose.yml` по образцу из `02_PLAN.md` (раздел 4.2), если решено использовать Docker.
 - **DoD:** `docker compose up --build` (если используется) поднимает `backend` на `:8000` и `frontend`
   на `:5173` одновременно; либо задокументированы две команды для `venv`/`npm` (проверяется в Phase 5).
 
+**Фактический статус:** Docker не использовался (осознанный выбор — не требуется для локальной
+разработки). Вместо этого добавлены скрипты [`scripts/dev-backend.ps1`](../scripts/dev-backend.ps1)
+/ [`scripts/dev-frontend.ps1`](../scripts/dev-frontend.ps1) (PowerShell) и их bash-аналоги
+[`scripts/dev-backend.sh`](../scripts/dev-backend.sh) / [`scripts/dev-frontend.sh`](../scripts/dev-frontend.sh),
+а также `.claude/launch.json` с конфигурациями `backend-dev`/`frontend-dev` для запуска через
+инструменты разработки. Полное текстовое описание команд для README — задача Phase 5 (T5.2), как
+и было запланировано.
+
 **Выход из Phase 1:** оба проекта запускаются локально, CORS настроен, роутинг/сторы — заглушки.
 
-**Фактический статус:** backend-часть (T1.1–T1.4) выполнена — Django-проект `backend/` создан
-(Django 5.2, DRF, `django-cors-headers`, `django-environ`, `PyMySQL`), `.env`/`.env.example`
-настроены, CORS подтверждён curl-запросом (`Access-Control-Allow-Origin: http://localhost:5173`),
-`GET /api/` и `/admin/login/` отвечают `200`. Frontend-часть (T1.5–T1.7) не выполнялась в этом
-проходе — переносится на отдельный шаг.
+**Фактический статус:** ✅ выполнено полностью.
+
+Backend (T1.1–T1.4): Django-проект `backend/` создан (Django 5.2, DRF, `django-cors-headers`,
+`django-environ`, `PyMySQL`), `.env`/`.env.example` настроены, CORS подтверждён curl-запросом
+(`Access-Control-Allow-Origin: http://localhost:5173`), `GET /api/` и `/admin/login/` отвечают `200`.
+
+Frontend (T1.5–T1.6): проект [`frontend/`](../frontend) создан через
+`npm create vite@latest -- --template vue-ts` (Vue 3.5, Vite 8, TypeScript); установлены
+`vue-router`, `pinia`, `axios`, Tailwind CSS 4 (через `@tailwindcss/postcss`,
+[`postcss.config.js`](../frontend/postcss.config.js), [`tailwind.config.js`](../frontend/tailwind.config.js)).
+Создан каркас: [`src/router/index.ts`](../frontend/src/router/index.ts) с тремя маршрутами
+(`/artists`, `/albums`, `/songs`) и заглушками [`ArtistListView.vue`](../frontend/src/views/ArtistListView.vue)/
+[`AlbumListView.vue`](../frontend/src/views/AlbumListView.vue)/[`SongListView.vue`](../frontend/src/views/SongListView.vue),
+[`src/api/client.ts`](../frontend/src/api/client.ts) — axios-инстанс с `baseURL` из
+`VITE_API_BASE_URL`, Pinia и Router подключены в [`src/main.ts`](../frontend/src/main.ts).
+`frontend/.env`/`.env.example` созданы.
+
+Проверено вручную: `npm run dev` поднимает Vite на `:5173` без ошибок консоли; переходы по всем
+трём маршрутам (клик по навигации и прямой URL) рендерят соответствующие заглушки; `npm run build`
+(`vue-tsc -b && vite build`) проходит без ошибок TypeScript. Дополнительно подтверждена реальная
+работа CORS end-to-end: `fetch()` с `http://localhost:5173` (frontend) к
+`http://localhost:8000/api/artists/` (backend) успешно вернул данные без CORS-ошибки в браузере.
+
+Scripts/Docker (T1.7): Docker не использовался (не требуется для локальной разработки), вместо
+этого добавлены `scripts/dev-backend.(ps1|sh)` и `scripts/dev-frontend.(ps1|sh)`, а также
+`.claude/launch.json`.
 
 ---
 
