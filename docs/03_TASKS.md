@@ -2,8 +2,12 @@
 
 **Методология:** Spec-Driven Development (SDD)
 **Шаг:** 3 — Tasks
-**Статус:** Draft
+**Статус:** In Progress — Phase 1 (backend-часть) и Phase 2 выполнены
 **Основано на:** [`docs/01_SPEC.md`](01_SPEC.md), [`docs/02_PLAN.md`](02_PLAN.md)
+
+Статусы задач: ✅ Done · ⬜ Pending. T1.5–T1.7 (инициализация frontend и общие скрипты запуска)
+намеренно оставлены `⬜ Pending` в этом проходе — выполнялась только backend-часть Phase 1
+(Django-проект, `.env`, CORS, роутинг `/api/`) и вся Phase 2.
 
 Каждая задача атомарна (один коммит/один PR), имеет явный **Definition of Done (DoD)** и способ
 проверки — автотест (TDD, красное → зелёное) либо ручная проверка (`Manual check`). Задачи внутри
@@ -23,7 +27,7 @@
 Цель фазы: рабочий скелет двух проектов (`backend/`, `frontend/`), которые запускаются локально
 и видят друг друга через CORS, без бизнес-логики.
 
-### T1.1 — Инициализация Django-проекта `[Manual]`
+### T1.1 — Инициализация Django-проекта `[Manual]` ✅ Done
 - Создать `backend/`, виртуальное окружение, `requirements.txt` (`Django`, `djangorestframework`,
   `django-cors-headers`, `django-environ` или `python-decouple`).
 - Выполнить `django-admin startproject config .` внутри `backend/`.
@@ -32,14 +36,14 @@
 - **DoD:** `python manage.py runserver` поднимается на `:8000` без ошибок; `python manage.py check`
   завершается без ошибок.
 
-### T1.2 — Конфигурация окружения (.env) `[Manual]`
+### T1.2 — Конфигурация окружения (.env) `[Manual]` ✅ Done
 - Подключить `django-environ`/`python-decouple`, вынести `SECRET_KEY`, `DEBUG`, `ALLOWED_HOSTS`,
   `DATABASE_URL`, `CORS_ALLOWED_ORIGINS` в `.env` (создать `backend/.env.example` из раздела 4.3 `02_PLAN.md`).
 - Добавить `backend/.env` в `.gitignore`.
 - **DoD:** сервер стартует, читая настройки из `.env`; при отсутствии `.env` — понятная ошибка,
   а не падение с трейсбеком в проде (`DEBUG=False` не крашит `runserver`).
 
-### T1.3 — Настройка CORS `[TDD/Manual]`
+### T1.3 — Настройка CORS `[TDD/Manual]` ✅ Done
 - Подключить `corsheaders.middleware.CorsMiddleware` в `MIDDLEWARE` (перед `CommonMiddleware`).
 - Настроить `CORS_ALLOWED_ORIGINS = env.list("CORS_ALLOWED_ORIGINS")`, по умолчанию включая
   `http://localhost:5173`.
@@ -47,12 +51,12 @@
   (после T3.x, когда `/api/` появится) содержит заголовок `Access-Control-Allow-Origin`. На этом
   шаге допустимо проверить на любом временном `GET`-эндпоинте (например, `/admin/login/`).
 
-### T1.4 — Базовый роутинг `/api/` `[Manual]`
+### T1.4 — Базовый роутинг `/api/` `[Manual]` ✅ Done
 - В `config/urls.py` подключить `path("api/", include("catalog.urls"))` и `path("admin/", admin.site.urls)`.
 - В `catalog/urls.py` создать пустой `DefaultRouter()` (без вьюсетов пока).
 - **DoD:** `GET http://localhost:8000/api/` возвращает `200` с DRF browsable API (пустой список роутов).
 
-### T1.5 — Инициализация Vue 3 + Vite проекта `[Manual]`
+### T1.5 — Инициализация Vue 3 + Vite проекта `[Manual]` ⬜ Pending
 - Создать `frontend/` через `npm create vite@latest . -- --template vue-ts` (или `vue`, если решено
   без TS — фиксируется здесь на TS согласно `02_PLAN.md`).
 - Установить зависимости: `vue-router`, `pinia`, `axios`, Tailwind CSS (`tailwindcss`, `postcss`,
@@ -60,7 +64,7 @@
 - Настроить Tailwind (`tailwind.config.js`, директивы в `src/style.css` или аналог).
 - **DoD:** `npm run dev` поднимает Vite на `:5173`, стартовая страница рендерится без ошибок в консоли.
 
-### T1.6 — Каркас Vue Router + Pinia + Axios-клиент `[Manual]`
+### T1.6 — Каркас Vue Router + Pinia + Axios-клиент `[Manual]` ⬜ Pending
 - Подключить `createRouter`/`createPinia` в `src/main.ts`.
 - Создать `src/router/index.ts` с заглушками маршрутов: `/artists`, `/albums`, `/songs` (пустые
   компоненты-заглушки).
@@ -69,13 +73,19 @@
 - **DoD:** переход по трём маршрутам в браузере рендерит соответствующие заглушки без ошибок консоли;
   `axios`-клиент импортируется без ошибок сборки.
 
-### T1.7 — Скрипты локального запуска и (опционально) Docker Compose `[Manual]`
+### T1.7 — Скрипты локального запуска и (опционально) Docker Compose `[Manual]` ⬜ Pending
 - Добавить в корень README-раздел или отдельный `scripts/` с командами запуска (детали — Phase 5),
   либо сразу `docker-compose.yml` по образцу из `02_PLAN.md` (раздел 4.2), если решено использовать Docker.
 - **DoD:** `docker compose up --build` (если используется) поднимает `backend` на `:8000` и `frontend`
   на `:5173` одновременно; либо задокументированы две команды для `venv`/`npm` (проверяется в Phase 5).
 
 **Выход из Phase 1:** оба проекта запускаются локально, CORS настроен, роутинг/сторы — заглушки.
+
+**Фактический статус:** backend-часть (T1.1–T1.4) выполнена — Django-проект `backend/` создан
+(Django 5.2, DRF, `django-cors-headers`, `django-environ`, `PyMySQL`), `.env`/`.env.example`
+настроены, CORS подтверждён curl-запросом (`Access-Control-Allow-Origin: http://localhost:5173`),
+`GET /api/` и `/admin/login/` отвечают `200`. Frontend-часть (T1.5–T1.7) не выполнялась в этом
+проходе — переносится на отдельный шаг.
 
 ---
 
@@ -84,20 +94,20 @@
 Цель фазы: модели данных из `02_PLAN.md` (раздел 2) реализованы, покрыты тестами на уровне ORM,
 доступны в Django admin для ручной проверки без API.
 
-### T2.1 — Модель `Artist` `[TDD]`
+### T2.1 — Модель `Artist` `[TDD]` ✅ Done
 - Тест: `ArtistModelTest` — создание `Artist(name="Queen")`, проверка `__str__`, проверка, что
   `name` обязателен (`blank=False`).
 - Реализация: модель `Artist` в `catalog/models.py` согласно `02_PLAN.md` (раздел 2.1).
 - Миграция: `python manage.py makemigrations catalog`.
 - **DoD:** тест зелёный; `python manage.py migrate` применяется без ошибок.
 
-### T2.2 — Модель `Song` `[TDD]`
+### T2.2 — Модель `Song` `[TDD]` ✅ Done
 - Тест: создание `Song(title="Bohemian Rhapsody")`, проверка `__str__`, обязательность `title`.
 - Реализация модели `Song` (раздел 2.3 `02_PLAN.md`).
 - Миграция.
 - **DoD:** тест зелёный; миграция применяется.
 
-### T2.3 — Модель `Album` (с FK на `Artist`) `[TDD]`
+### T2.3 — Модель `Album` (с FK на `Artist`) `[TDD]` ✅ Done
 - Тест: создание `Album` с привязкой к `Artist`; проверка `related_name="albums"`
   (`artist.albums.count() == 1`); проверка обязательности `title`, `artist`, `release_year`.
 - Тест на каскад: удаление `Artist` удаляет связанный `Album` (`Album.objects.count() == 0`
@@ -109,7 +119,7 @@
 - Миграция.
 - **DoD:** тесты зелёные; каскадное удаление подтверждено тестом.
 
-### T2.4 — Модель `AlbumSong` + constraints уникальности `[TDD]`
+### T2.4 — Модель `AlbumSong` + constraints уникальности `[TDD]` ✅ Done
 - Тест: создание `AlbumSong(album=..., song=..., track_number=1)` — успешно.
 - Тест: попытка создать второй `AlbumSong` с тем же `album` и тем же `track_number` (другая песня) —
   вызывает `IntegrityError` при `save()`/`full_clean()` (в зависимости от того, проверяется ли
@@ -125,7 +135,7 @@
 - **DoD:** все перечисленные тесты зелёные; `python manage.py migrate` применяется без ошибок на
   чистой БД.
 
-### T2.5 — Django Admin для всех моделей `[Manual]`
+### T2.5 — Django Admin для всех моделей `[Manual]` ✅ Done
 - Зарегистрировать `Artist`, `Album`, `Song`, `AlbumSong` в `catalog/admin.py`.
 - Для `Album` — inline-редактор `AlbumSong` (`TabularInline`), чтобы треки редактировались прямо
   на странице альбома.
@@ -135,7 +145,7 @@
   альбом, песню и трек (`AlbumSong`) полностью вручную, включая проверку, что admin **не позволяет**
   сохранить дубликат `track_number` в одном альбоме (показывает ошибку валидации формы).
 
-### T2.6 — Валидация `release_year` на уровне модели `[TDD]`
+### T2.6 — Валидация `release_year` на уровне модели `[TDD]` ✅ Done
 - Тест: `Album` с `release_year` в будущем (текущий год + 2) не проходит `full_clean()`.
 - Тест: `Album` с `release_year=1800` не проходит `full_clean()`.
 - Тест: `Album` с корректным годом (например, текущий год) проходит `full_clean()`.
@@ -146,6 +156,17 @@
 
 **Выход из Phase 2:** все модели, миграции и constraints из `02_PLAN.md` реализованы и покрыты
 тестами; данные можно полностью администрировать через Django admin без единой строчки API-кода.
+
+**Фактический статус:** ✅ выполнено полностью. Модели `Artist`, `Album`, `Song`, `AlbumSong`
+реализованы в [`backend/catalog/models.py`](../backend/catalog/models.py) с обоими
+`UniqueConstraint` (`album`+`track_number`, `album`+`song`) и валидацией `release_year`
+(1860 … текущий год + 1). Миграция `catalog/migrations/0001_initial.py` применена к MySQL-БД
+`python_album_catalog` (`127.0.0.1:3306`, через драйвер PyMySQL). 20 тестов в
+[`backend/catalog/tests/test_models.py`](../backend/catalog/tests/test_models.py) зелёные
+(`python manage.py test catalog`). Django Admin
+([`backend/catalog/admin.py`](../backend/catalog/admin.py)) с `AlbumSongInline` вручную проверен
+в браузере: альбом с треками создаётся через inline-форму, повторный `track_number` в одном
+альбоме корректно отклоняется с сообщением «Please correct the duplicate data for track_number.».
 
 ---
 
