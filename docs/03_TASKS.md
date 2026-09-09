@@ -2,7 +2,7 @@
 
 **Методология:** Spec-Driven Development (SDD)
 **Шаг:** 3 — Tasks
-**Статус:** In Progress — Phase 1, Phase 2 и Phase 3 выполнены полностью
+**Статус:** In Progress — Phase 1, Phase 2, Phase 3 и Phase 4 выполнены полностью
 **Основано на:** [`docs/01_SPEC.md`](01_SPEC.md), [`docs/02_PLAN.md`](02_PLAN.md)
 
 Статусы задач: ✅ Done · ⬜ Pending.
@@ -325,7 +325,7 @@ Scripts/Docker (T1.7): Docker не использовался (не требуе
 Цель фазы: работающий SPA-интерфейс поверх API из Phase 3, с тремя модулями (Artist, Album, Song)
 и явным редактором порядка треков в альбоме.
 
-### T4.1 — TS-типы моделей и API-клиенты `[Manual]`
+### T4.1 — TS-типы моделей и API-клиенты `[Manual]` ✅ Done
 - Создать `src/types/models.ts`: `Artist`, `Song`, `Album`, `AlbumSong`/`Track` — зеркалят
   сериализаторы из `02_PLAN.md`.
 - Создать `src/api/artists.ts`, `src/api/albums.ts`, `src/api/songs.ts` — функции-обёртки над
@@ -334,51 +334,51 @@ Scripts/Docker (T1.7): Docker не использовался (не требуе
 - **DoD (Manual):** файлы компилируются без ошибок TypeScript (`npm run build` или `vue-tsc --noEmit`
   проходит).
 
-### T4.2 — Pinia store `artists` `[Manual]`
+### T4.2 — Pinia store `artists` `[Manual]` ✅ Done
 - `src/stores/artists.ts`: state (`items`, `loading`, `error`), actions (`fetchAll`, `create`,
   `update`, `remove`), использующие `api/artists.ts`.
 - **DoD (Manual):** в консоли браузера (Vue Devtools → Pinia) видно, что `fetchAll()` заполняет
   `items` реальными данными с backend.
 
-### T4.3 — Модуль «Исполнители»: список + создание `[Manual]`
+### T4.3 — Модуль «Исполнители»: список + создание `[Manual]` ✅ Done
 - `ArtistListView.vue`: таблица/список исполнителей из `stores/artists`, форма создания нового
   исполнителя (поле `name`), кнопка удаления с `window.confirm`-подтверждением (или модалка).
 - Маршрут `/artists` в `router/index.ts` подключает `ArtistListView`.
 - **DoD (Manual):** в браузере на `/artists` можно создать исполнителя, увидеть его в списке без
   перезагрузки страницы, удалить его с подтверждением; после удаления список обновляется.
 
-### T4.4 — Модуль «Исполнители»: детальная страница + редактирование `[Manual]`
+### T4.4 — Модуль «Исполнители»: детальная страница + редактирование `[Manual]` ✅ Done
 - `ArtistDetailView.vue` (маршрут `/artists/:id`): показывает имя исполнителя (с inline-редактированием
   или отдельной формой) и список его альбомов (по данным из `GET /api/artists/{id}/`).
 - **DoD (Manual):** переход с `/artists` на страницу конкретного исполнителя показывает корректные
   данные; изменение имени сохраняется и отражается в списке `/artists` при возврате.
 
-### T4.5 — Pinia store `songs` + модуль «Песни»: каталог и поиск `[Manual]`
+### T4.5 — Pinia store `songs` + модуль «Песни»: каталог и поиск `[Manual]` ✅ Done
 - `src/stores/songs.ts` — аналогично `artists`, плюс action `search(query)`.
 - `SongListView.vue` (маршрут `/songs`): список песен, поле поиска (debounce, например 300 мс),
   форма создания песни независимо от альбома.
 - **DoD (Manual):** ввод текста в поле поиска фильтрует список через реальный запрос к
   `GET /api/songs/?search=...`; создание песни через форму сразу появляется в списке.
 
-### T4.6 — Модуль «Песни»: детальная страница с альбомами `[Manual]`
+### T4.6 — Модуль «Песни»: детальная страница с альбомами `[Manual]` ✅ Done
 - `SongDetailView.vue` (маршрут `/songs/:id`): название песни + список альбомов с номером трека
   в каждом (данные из `GET /api/songs/{id}/`), ссылки на соответствующие страницы альбомов.
 - **DoD (Manual):** песня, добавленная в 2+ альбома (проверяется через ранее созданные данные или
   Django admin), корректно показывает оба альбома с правильными номерами треков.
 
-### T4.7 — Pinia store `albums` `[Manual]`
+### T4.7 — Pinia store `albums` `[Manual]` ✅ Done
 - `src/stores/albums.ts`: state + actions (`fetchAll`, `fetchOne`, `create`, `update`, `remove`,
   `addTrack`, `updateTrack`, `removeTrack`), использующие `api/albums.ts`.
 - **DoD (Manual):** actions вызывают корректные эндпоинты (`/api/albums/{id}/tracks/...`) —
   проверяется через вкладку Network в devtools при ручном тестировании T4.9–T4.10.
 
-### T4.8 — Модуль «Альбомы»: список с фильтром по исполнителю `[Manual]`
+### T4.8 — Модуль «Альбомы»: список с фильтром по исполнителю `[Manual]` ✅ Done
 - `AlbumListView.vue` (маршрут `/albums`): список альбомов (название, исполнитель, год),
   выпадающий фильтр по `artist`, ссылка на детальную страницу и на форму создания.
 - **DoD (Manual):** список альбомов отображается корректно; выбор исполнителя в фильтре сужает
   список без перезагрузки страницы.
 
-### T4.9 — Компонент `TrackListEditor.vue` (редактор треклиста) `[Manual]`
+### T4.9 — Компонент `TrackListEditor.vue` (редактор треклиста) `[Manual]` ✅ Done
 - Переиспользуемый компонент: список строк «песня (select существующей ИЛИ поле ввода новой) +
   числовое поле `track_number` + кнопка удаления строки», кнопка «добавить трек».
 - Клиентская валидация: подсветка/сообщение об ошибке, если в текущем списке дублируется
@@ -386,7 +386,7 @@ Scripts/Docker (T1.7): Docker не использовался (не требуе
 - **DoD (Manual):** попытка ввести два одинаковых номера трека в форме показывает ошибку и
   блокирует кнопку отправки; после исправления кнопка разблокируется.
 
-### T4.10 — Модуль «Альбомы»: форма создания (`AlbumFormView.vue`) `[Manual]`
+### T4.10 — Модуль «Альбомы»: форма создания (`AlbumFormView.vue`) `[Manual]` ✅ Done
 - Форма: выбор/поиск исполнителя, `title`, `release_year`, встроенный `TrackListEditor`
   (добавление существующих песен через поиск + создание новых «на лету»).
 - Отправка через `stores/albums.create(...)` → `POST /api/albums/` с вложенным `tracks`.
@@ -396,7 +396,7 @@ Scripts/Docker (T1.7): Docker не использовался (не требуе
   (2 существующие песни + 1 новая «на лету») → альбом появляется в `/albums`, треки видны в
   правильном порядке на его странице.
 
-### T4.11 — Модуль «Альбомы»: детальная страница + редактирование треклиста `[Manual]`
+### T4.11 — Модуль «Альбомы»: детальная страница + редактирование треклиста `[Manual]` ✅ Done
 - `AlbumDetailView.vue` (маршрут `/albums/:id`): метаданные альбома, треклист (отсортирован по
   `track_number`), кнопки добавления/удаления/изменения номера трека прямо на странице
   (переиспользует `TrackListEditor` или упрощённую inline-версию).
@@ -405,7 +405,7 @@ Scripts/Docker (T1.7): Docker не использовался (не требуе
   переходом на `/songs`), изменить номер трека на свободный (сохраняется), получить ошибку при
   попытке поставить занятый номер.
 
-### T4.12 — Состояния загрузки/ошибок и UX-полировка `[Manual]`
+### T4.12 — Состояния загрузки/ошибок и UX-полировка `[Manual]` ✅ Done
 - Во всех трёх модулях (Artists/Albums/Songs): спиннер/скелетон при `loading`, сообщение при
   пустом списке, единообразный вывод ошибок API (используя перехватчик ошибок из `api/client.ts`).
 - **DoD (Manual):** отключение backend (остановить `runserver`) при открытом frontend показывает
@@ -414,6 +414,52 @@ Scripts/Docker (T1.7): Docker не использовался (не требуе
 
 **Выход из Phase 4:** все три UI-модуля из `01_SPEC.md` (раздел 4) реализованы и вручную проверены
 сквозными сценариями поверх реального backend.
+
+**Фактический статус:** ✅ выполнено полностью.
+
+Добавлены [`src/types/models.ts`](../frontend/src/types/models.ts) (зеркалит DRF-сериализаторы),
+[`src/api/{artists,songs,albums}.ts`](../frontend/src/api) (типизированные обёртки над `axios`)
+и [`src/api/errors.ts`](../frontend/src/api/errors.ts) (единый разбор ошибок DRF/сетевых сбоев).
+
+Pinia-сторы: [`stores/artists.ts`](../frontend/src/stores/artists.ts),
+[`stores/songs.ts`](../frontend/src/stores/songs.ts) (с `search()`),
+[`stores/albums.ts`](../frontend/src/stores/albums.ts) (с `addTrack`/`updateTrack`/`removeTrack`) —
+у каждого `state: {items, current, loading, error}`.
+
+Страницы: [`ArtistListView.vue`](../frontend/src/views/ArtistListView.vue) (список + создание +
+удаление), [`ArtistDetailView.vue`](../frontend/src/views/ArtistDetailView.vue) (редактирование
+имени + список альбомов), [`SongListView.vue`](../frontend/src/views/SongListView.vue) (каталог +
+debounce-поиск + создание), [`SongDetailView.vue`](../frontend/src/views/SongDetailView.vue) —
+таблица «Исполнитель | Альбом | Год | Трек №», [`AlbumListView.vue`](../frontend/src/views/AlbumListView.vue)
+(список + клиентский фильтр по исполнителю), [`AlbumFormView.vue`](../frontend/src/views/AlbumFormView.vue)
+(конструктор альбома: исполнитель/год/название + `TrackListEditor`, отправка одним
+`POST /api/albums/` с вложенным `tracks`), [`AlbumDetailView.vue`](../frontend/src/views/AlbumDetailView.vue)
+(треклист, изменение номера трека, добавление/удаление трека, удаление альбома). Переиспользуемые
+компоненты: [`TrackListEditor.vue`](../frontend/src/components/TrackListEditor.vue) (клиентская
+валидация дублей `track_number`, блокирующая отправку) и
+[`StateMessage.vue`](../frontend/src/components/StateMessage.vue) (единый loading/error/empty).
+Роуты обновлены в [`router/index.ts`](../frontend/src/router/index.ts).
+
+Проверено вручную через dev-серверы (backend `:8000` + frontend `:5173`) в браузере:
+- Создание исполнителя без перезагрузки страницы; переход на страницу исполнителя.
+- Конструктор альбома: строка с существующей песней (select) + строка с новой песней
+  (переключение "Существующая/Новая"); ввод одинакового `track_number` в обеих строках мгновенно
+  показал «Номер трека 1 повторяется.» на обеих строках и заблокировал отправку
+  («Заполните все обязательные поля и исправьте ошибки в треклисте.»); после исправления номера
+  форма отправилась (`POST /api/albums/` с вложенным `tracks`, включая `new_song_title`), альбом
+  создался и произошёл редирект на его страницу с корректным треклистом.
+- Страница песни `Bohemian Rhapsody` показала таблицу «Исполнитель | Альбом | Год | Трек №» с
+  двумя строками (Queen / A Night at the Opera / 1975 / 11 и Queen / Greatest Hits / 1981 / 2) —
+  ключевой сценарий "одна песня в двух альбомах с разными номерами".
+- Удаление трека на странице альбома: трек исчез из треклиста, песня осталась в `/songs`.
+- Фильтр по исполнителю на `/albums` и debounce-поиск на `/songs` — оба работают без перезагрузки
+  страницы, через реальные запросы к API.
+- Остановка backend (`runserver`) при открытом frontend: все три страницы списков показали
+  «Не удалось связаться с сервером. Проверьте, что backend запущен.» вместо пустого экрана;
+  в консоли — только сетевые `ERR_CONNECTION_REFUSED`, ни одного необработанного исключения
+  приложения. После перезапуска backend данные снова подгружаются.
+
+`npm run build` (`vue-tsc -b && vite build`) — 0 ошибок TypeScript.
 
 ---
 
