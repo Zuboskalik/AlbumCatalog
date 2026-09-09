@@ -2,12 +2,12 @@
 
 **Методология:** Spec-Driven Development (SDD)
 **Шаг:** 3 — Tasks
-**Статус:** In Progress — Phase 1 (backend-часть) и Phase 2 выполнены
+**Статус:** In Progress — Phase 1 (backend-часть), Phase 2 и Phase 3 выполнены
 **Основано на:** [`docs/01_SPEC.md`](01_SPEC.md), [`docs/02_PLAN.md`](02_PLAN.md)
 
 Статусы задач: ✅ Done · ⬜ Pending. T1.5–T1.7 (инициализация frontend и общие скрипты запуска)
-намеренно оставлены `⬜ Pending` в этом проходе — выполнялась только backend-часть Phase 1
-(Django-проект, `.env`, CORS, роутинг `/api/`) и вся Phase 2.
+намеренно оставлены `⬜ Pending` — выполнялась только backend-часть Phase 1 (Django-проект, `.env`,
+CORS, роутинг `/api/`), вся Phase 2 и вся Phase 3.
 
 Каждая задача атомарна (один коммит/один PR), имеет явный **Definition of Done (DoD)** и способ
 проверки — автотест (TDD, красное → зелёное) либо ручная проверка (`Manual check`). Задачи внутри
@@ -175,7 +175,7 @@
 Цель фазы: REST-контракты из `02_PLAN.md` (раздел 3) реализованы через DRF и покрыты
 `APITestCase`.
 
-### T3.1 — `ArtistSerializer` + `ArtistViewSet` (CRUD) `[TDD]`
+### T3.1 — `ArtistSerializer` + `ArtistViewSet` (CRUD) `[TDD]` ✅ Done
 - Тест (`APITestCase`): `GET /api/artists/` → `200`, пустой список на чистой БД.
 - Тест: `POST /api/artists/` с `{"name": "Queen"}` → `201`, объект создан в БД.
 - Тест: `POST /api/artists/` с пустым `name` → `400` с сообщением об ошибке по полю `name`.
@@ -189,7 +189,7 @@
   через `DefaultRouter`.
 - **DoD:** все перечисленные тесты зелёные.
 
-### T3.2 — `SongSerializer` + `SongViewSet` (CRUD + поиск) `[TDD]`
+### T3.2 — `SongSerializer` + `SongViewSet` (CRUD + поиск) `[TDD]` ✅ Done
 - Тест: `GET/POST/PATCH/DELETE /api/songs/` — аналогично T3.1 (список, создание, ошибка валидации
   на пустой `title`, обновление, удаление).
 - Тест: `GET /api/songs/?search=bohe` возвращает только песни, чьё название содержит подстроку
@@ -197,7 +197,7 @@
 - Реализация: `SongSerializer`, `SongViewSet` с `filter_backends=[SearchFilter]`, `search_fields=["title"]`.
 - **DoD:** тесты зелёные.
 
-### T3.3 — `AlbumSerializer` (read) + `AlbumViewSet` (CRUD метаданных, без треков) `[TDD]`
+### T3.3 — `AlbumSerializer` (read) + `AlbumViewSet` (CRUD метаданных, без треков) `[TDD]` ✅ Done
 - Тест: `POST /api/albums/` с `{"title": ..., "artist_id": <id>, "release_year": ...}` (без `tracks`)
   → `201`, объект создан, `artist` в ответе — вложенный объект `{id, name}`.
 - Тест: `POST /api/albums/` с несуществующим `artist_id` → `400`.
@@ -209,7 +209,7 @@
   если требуется), `AlbumViewSet` с `get_serializer_class` в зависимости от action.
 - **DoD:** тесты зелёные.
 
-### T3.4 — Создание альбома сразу с треклистом (`tracks` в `POST /api/albums/`) `[TDD]`
+### T3.4 — Создание альбома сразу с треклистом (`tracks` в `POST /api/albums/`) `[TDD]` ✅ Done
 - Тест: `POST /api/albums/` с `tracks: [{"song_id": <id>, "track_number": 1}, ...]` → `201`,
   созданы соответствующие `AlbumSong`.
 - Тест: `POST /api/albums/` с `tracks: [{"song": {"title": "New Song"}, "track_number": 1}]` →
@@ -222,7 +222,7 @@
   списка `tracks` ещё до обращения к БД (`validate_tracks()`/`validate()`).
 - **DoD:** тесты зелёные, включая проверку отсутствия «частично созданных» альбомов при ошибке.
 
-### T3.5 — Вложенный роут `/api/albums/{id}/tracks/` (список + добавление) `[TDD]`
+### T3.5 — Вложенный роут `/api/albums/{id}/tracks/` (список + добавление) `[TDD]` ✅ Done
 - Тест: `GET /api/albums/{id}/tracks/` → `200`, список треков альбома, отсортированный по `track_number`.
 - Тест: `POST /api/albums/{id}/tracks/` с `{"song_id": <id>, "track_number": N}` → `201`, новый
   `AlbumSong` создан и привязан к альбому из URL.
@@ -235,7 +235,7 @@
   конкретный механизм на усмотрение исполнителя, контракт URL фиксирован в `02_PLAN.md`.
 - **DoD:** тесты зелёные.
 
-### T3.6 — `PATCH`/`DELETE` `/api/albums/{id}/tracks/{track_id}/` `[TDD]`
+### T3.6 — `PATCH`/`DELETE` `/api/albums/{id}/tracks/{track_id}/` `[TDD]` ✅ Done
 - Тест: `PATCH .../tracks/{track_id}/` меняет `track_number` на свободный номер → `200`.
 - Тест: `PATCH .../tracks/{track_id}/` на номер, уже занятый другим треком того же альбома → `400`.
 - Тест: `DELETE .../tracks/{track_id}/` → `204`; связанная `Song` **не удаляется** (проверка
@@ -244,7 +244,7 @@
   `404`.
 - **DoD:** тесты зелёные.
 
-### T3.7 — `GET /api/songs/{id}/` с вложенным списком альбомов `[TDD]`
+### T3.7 — `GET /api/songs/{id}/` с вложенным списком альбомов `[TDD]` ✅ Done
 - Тест: песня, добавленная в 2 альбома с разными `track_number`, при запросе `GET /api/songs/{id}/`
   возвращает оба альбома с соответствующими номерами треков (формат — раздел 3.3 `02_PLAN.md`).
 - Тест: песня без единого альбома → `albums: []`.
@@ -253,22 +253,43 @@
 - **DoD:** тесты зелёные; N+1 запросы отсутствуют (проверяется `assertNumQueries` в тесте или
   вручную через `django-debug-toolbar`/`connection.queries` — на усмотрение исполнителя).
 
-### T3.8 — Каскадное удаление через API `[TDD]`
+### T3.8 — Каскадное удаление через API `[TDD]` ✅ Done
 - Тест: `DELETE /api/artists/{id}/` → связанные `Album` и их `AlbumSong` удалены из БД.
 - Тест: `DELETE /api/songs/{id}/` → связанные `AlbumSong` удалены, альбом остаётся (`Album.objects.filter(...).exists() is True`).
 - Тест: `DELETE /api/albums/{id}/` → связанные `AlbumSong` удалены, песни остаются.
 - **DoD:** тесты зелёные (частично дублируют T2.3/T2.4 на уровне ORM, но здесь — через реальные
   HTTP-запросы к API, что закрывает соответствующий пункт Acceptance Criteria из `01_SPEC.md`).
 
-### T3.9 — Полный прогон backend-тестов + ручная проверка через DRF Browsable API `[Both]`
+### T3.9 — Полный прогон backend-тестов + ручная проверка через DRF Browsable API `[Both]` ✅ Done
 - Прогнать `python manage.py test catalog` — весь набор тестов из Phase 2–3 зелёный.
 - **Manual:** открыть `http://localhost:8000/api/` в браузере, вручную создать исполнителя → альбом
   с треками → песню, убедиться, что DRF browsable API отображает корректные вложенные структуры,
   а ошибка дублирующегося `track_number` показывается как `400` с читаемым сообщением.
 - **DoD:** `0 failures` в тестах; ручной сценарий выполнен без ошибок `500`.
 
+**Фактический статус:** `python manage.py test catalog` → **55 тестов, 0 failures** (20 из Phase 2
++ 35 новых API-тестов). Ручной сценарий выполнен через `curl` (эквивалент browsable API): создан
+второй альбом «Greatest Hits» с той же песней «Bohemian Rhapsody» под другим `track_number` —
+`GET /api/songs/1/` корректно вернул оба альбома с их номерами; попытка добавить трек с уже
+занятым `track_number` вернула `400 {"track_number": ["Трек с номером 2 уже существует в этом
+альбоме."]}` — без единого `500`.
+
 **Выход из Phase 3:** все REST-эндпоинты из `02_PLAN.md` (раздел 3) реализованы, покрыты
 `APITestCase`, вручную проверены через browsable API.
+
+**Фактический статус:** ✅ выполнено полностью. Реализованы
+[`backend/catalog/serializers.py`](../backend/catalog/serializers.py) (`ArtistSerializer`/
+`ArtistListSerializer`, `SongSerializer`/`SongListSerializer` с вложенным списком альбомов песни
+через `SerializerMethodField`, `AlbumSerializer`/`AlbumListSerializer` с nested-записью треков
+и `transaction.atomic()`, `AlbumTrackSerializer` с валидацией уникальности `track_number`/`song`
+в рамках альбома) и [`backend/catalog/views.py`](../backend/catalog/views.py) (`ArtistViewSet`,
+`SongViewSet` с `SearchFilter`, `AlbumViewSet`, плюс `AlbumTrackListCreateView`/
+`AlbumTrackDetailView` для вложенного роута `/api/albums/{id}/tracks/{track_id}/`), подключены
+в [`backend/catalog/urls.py`](../backend/catalog/urls.py). Ключевое бизнес-правило — одна песня
+в разных альбомах с разными `track_number` — покрыто отдельным сквозным тестом
+`SongAcrossTwoAlbumsWithDifferentTrackNumbersApiTest` в
+[`backend/catalog/tests/test_api.py`](../backend/catalog/tests/test_api.py) и подтверждено
+вручную через API. `python manage.py test catalog` → 55/55 тестов зелёные.
 
 ---
 
